@@ -1,0 +1,162 @@
+# Source: https://github.com/github/gitignore
+
+
+# Project
+# ======================================================================================================================
+.idea/
+
+# Composer
+# ----------------------------------------------------------------------------------------------------------------------
+composer.phar
+/vendor/
+
+# Grunt
+# ----------------------------------------------------------------------------------------------------------------------
+# Compiled Assets #
+/assets/css/*.css
+/assets/js/*.js
+!/assets/css/fonts.css
+
+# Node
+# ----------------------------------------------------------------------------------------------------------------------
+node_modules/
+
+# SASS
+# ----------------------------------------------------------------------------------------------------------------------
+.sass-cache/
+*.css.map
+
+
+# Editors, Programs
+# ======================================================================================================================
+
+# Atom
+# ----------------------------------------------------------------------------------------------------------------------
+.remote-sync.json
+
+# Sublime
+# ----------------------------------------------------------------------------------------------------------------------
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+*.sublime-workspace
+
+# project files should be checked into the repository, unless a significant
+# proportion of contributors will probably not be using SublimeText
+# *.sublime-project
+
+# sftp configuration file
+sftp-config.json
+
+# Package control specific files
+Package Control.last-run
+Package Control.ca-list
+Package Control.ca-bundle
+Package Control.system-ca-bundle
+Package Control.cache/
+Package Control.ca-certs/
+Package Control.merged-ca-bundle
+Package Control.user-ca-bundle
+oscrypto-ca-bundle.crt
+bh_unicode_properties.cache
+
+# Sublime-github package stores a github token in this file
+# https://packagecontrol.io/packages/sublime-github
+GitHub.sublime-settings
+
+# TortoiseGit
+# ----------------------------------------------------------------------------------------------------------------------
+# Project-level settings
+/.tgitconfig
+
+
+# Files
+# ======================================================================================================================
+
+# Archives
+# ----------------------------------------------------------------------------------------------------------------------
+# It's better to unpack these files and commit the raw source because
+# git has its own built in compression methods.
+*.7z
+*.jar
+*.rar
+*.zip
+*.gz
+*.tgz
+*.bzip
+*.bz2
+*.xz
+*.lzma
+*.cab
+
+#packing-only formats
+*.iso
+*.tar
+
+#package management formats
+*.dmg
+*.xpi
+*.gem
+*.egg
+*.deb
+*.rpm
+*.msi
+*.msm
+*.msp
+
+
+# OS
+# ======================================================================================================================
+
+# Windows
+# ----------------------------------------------------------------------------------------------------------------------
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# MacOS
+# ----------------------------------------------------------------------------------------------------------------------
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

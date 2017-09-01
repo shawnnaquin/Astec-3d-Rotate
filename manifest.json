@@ -1,0 +1,16 @@
+{
+  "name": "L2D",
+  "short_name": "L2D",
+  "theme_color" : "#e7512b",
+  "background_color" : "#3e3e3f",
+  "icons": [
+    {
+      "src": "/assets/images/favicon/favicon-196x196.png",
+      "sizes": "196x196",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=homescreen",
+  "display": "standalone",
+  "orientation": "portrait"
+}

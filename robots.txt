@@ -1,0 +1,11 @@
+User-agent: *
+
+# URLs
+Disallow: /adserver*
+Disallow: /~ercw/*
+Disallow: /~market/*
+Disallow: /~mdreview/*
+Disallow: /~theedge/*
+
+# Folders
+Disallow: /sandbox/*

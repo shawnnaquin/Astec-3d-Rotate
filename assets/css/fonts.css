@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Amnesty Trade Gothic Cn';
+  src: url('/assets/fonts/AmnestyTradeGothic-BdCn20.eot'),
+       url('/assets/fonts/AmnestyTradeGothic-BdCn20.woff') format('woff'),
+       url('/assets/fonts/AmnestyTradeGothic-BdCn20.ttf')  format('truetype'),
+       url('/assets/fonts/AmnestyTradeGothic-BdCn20.svg#c231c38f8fbd6d7d770819f81c4da63a') format('svg');
+  font-style:   normal;
+  font-weight:  400;
+}
