@@ -32,8 +32,8 @@ $outer-space: #2e3836;
 $global-width: 1700px;
 $row-width: $global-width;
 
-$body-background: $outer-space;
-$body-font-color: $white;
+$body-background: $white;
+$body-font-color: $outer-space;
 $body-font-family: $font-source-sans;
 $breakpoint-classes: (small medium large xlarge xxlarge xxxlarge huge);
 $breakpoints: ( small: 0, medium: 768px, large: 1024px, xlarge: 1200px, xxlarge: 1440px, xxxlarge: 1600px, huge: 1920px );

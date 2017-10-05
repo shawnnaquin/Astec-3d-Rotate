@@ -1,19 +1,19 @@
 <template>
     <div :class="$style.wrapper">
 
-        <div v-if="loaded">
-            <main-header></main-header>
-
-            <intro></intro>
+        <div v-if="loaded" :class="$style.loaded">
+            <!-- <main-header></main-header> -->
+            <!-- <intro></intro> -->
 
             <router-view></router-view>
 
-            <main-footer></main-footer>
+            <!-- <main-footer></main-footer> -->
         </div>
-
+<!--
         <transition name="fade">
             <page-loader v-if="animateLoader"></page-loader>
         </transition>
+ -->
     </div>
 </template>
 
@@ -81,13 +81,20 @@
 
 
 <style lang="scss" module>
-    .wrapper {
-
+    .wrapper,
+    .loaded {
+        height:100%;
     }
 </style>
 
 <style lang="scss">
     @include foundation-global-styles;
+
+    html,
+    body {
+        height:100%;
+        overflow:hidden;
+    }
 
     /* transitions
 	------------------------------------------------------------------------------------------------------------------*/
