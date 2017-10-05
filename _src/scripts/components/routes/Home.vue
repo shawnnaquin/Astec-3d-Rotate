@@ -23,6 +23,10 @@
 				newX: null,
 				newY: null,
 
+				images: {
+
+				},
+
 			}
 		},
 
@@ -38,10 +42,16 @@
 		},
 
 		components: {
-
 		},
 
 		methods: {
+
+			// getters / converters
+			//--------------------------------------------------------------------------------------------------------//
+
+			twoDigit( num ) {
+				return ( '0' + num ).slice(-2);
+			},
 
 			convertRange(x,y) {
 
@@ -83,24 +93,24 @@
 
 			},
 
+			getImage() {
+
+			},
+
+			// event callbacks
+			//--------------------------------------------------------------------------------------------------------//
+
+			loadImages() {
+				for ( let y = 0; y < this.yMax; y++ ) {
+					for ( let x = 0; x < this.xMax; x++ ) {
+						console.log( y+1,x+1 );
+					}
+				}
+			},
+
 			setCanvasSize() {
 				this.canvas.width = window.innerWidth;
 				this.canvas.height = window.innerHeight;
-			},
-
-			animate() {
-
-				let x = this.newX ? this.newX : this.curX;
-				let y = this.newY ? this.newY : this.curY;
-				console.log( x,y );
-				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
-				this.ctx.beginPath();
-				this.ctx.fillStyle = 'green';
-				this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
-				this.ctx.fill();
-
-				requestAnimationFrame( this.animate );
-
 			},
 
 			mouseMove(event) {
@@ -129,15 +139,44 @@
 				this.setCanvasSize();
 			},
 
+			// listener controllers
+			//----------------------------------------------------=---------------------------------------------------//
+
 			addListeners() {
 				window.addEventListener( 'resize', this.resize );
 				this.canvas.addEventListener( 'mousedown', this.mouseDown );
 				this.canvas.addEventListener( 'mouseup', this.mouseUp );
-			}
+			},
 
+			// removeEventListeners() {
+			// 	window.removeEventListener( 'resize', this.resize );
+			// 	this.canvas.removeEventListener( 'mousedown', this.mouseDown );
+			// 	this.canvas.removeEventListener( 'mouseup', this.mouseUp );
+			// },
+
+			// loop
+			//----------------------------------------------------=---------------------------------------------------//
+
+			animate() {
+
+				let x = this.newX ? this.newX : this.curX;
+				let y = this.newY ? this.newY : this.curY;
+
+				// console.log( x,y );
+
+				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+				this.ctx.beginPath();
+				this.ctx.fillStyle = 'green';
+				this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+				this.ctx.fill();
+
+				requestAnimationFrame( this.animate );
+
+			},
 		},
 
 		mounted() {
+			this.loadImages();
 			this.setCanvasSize();
 			this.addListeners();
 			requestAnimationFrame( this.animate );
