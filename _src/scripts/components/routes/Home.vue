@@ -23,10 +23,22 @@
 				newX: null,
 				newY: null,
 
+				imagePrefix: 'DoubleBarrel',
+				imageDirectory: 'barrel',
+				siteImageDirectory: '../assets/images',
+				imageSeperator: '_',
+				imageExtension: 'jpg',
+
+				// xRotations: 4,
+
+				flipped: false,
+				loaded: false,
 				images: {
 
 				},
+				coords: {
 
+				}
 			}
 		},
 
@@ -43,7 +55,8 @@
 
 		components: {
 		},
-
+		watch: {
+		},
 		methods: {
 
 			// getters / converters
@@ -53,9 +66,10 @@
 				return ( '0' + num ).slice(-2);
 			},
 
-			convertRange(x,y) {
+			convertRange( x, y, fasterX ) {
 
 				// fits new coordinates linearly into the new ranges
+				// let m = fasterX ? this.xRotations : 1;
 
 				let curXMin = 0; // change these to top / left if not using offsetX,offsetY
 				let curYMin = 0;
@@ -69,6 +83,12 @@
 				let rangeX 	= ( this.xMax - this.xMin ) / ( curXMax - curXMin );
 				let newX 	= Math.round( ( x - curXMin ) * rangeX + this.xMin );
 
+				// if( fasterX ) {
+				// 	newX = newX % 24 === 0 ? this.xMax : newX % 24;
+				// }
+
+				// console.log( newX );
+
 				return {
 					x: newX,
 					y: newY
@@ -78,22 +98,60 @@
 
 			getMove(x,y) {
 
-				let coords = this.convertRange( x,y );
-
-				let howFarX  = ( coords.x - this.originX );
-				let unmoddedX = this.curX + howFarX;
+				let howFarX  = ( x - this.originX );
+				let unmoddedX = this.curX - howFarX;
 				let modX = unmoddedX % this.xMax === 0 ? this.xMax : unmoddedX % this.xMax;
 
-				let howFarY  = ( coords.y - this.originY );
+				let howFarY  = ( y - this.originY );
 				let unmoddedY = this.curY + howFarY;
 				let modY = unmoddedY % this.yMax === 0 ? this.yMax : unmoddedY % this.yMax;
 
-				this.newX = Math.abs( modX );
-				this.newY = Math.abs( modY );
+				let newX = modX;
+				let newY = modY;
+				// let oldX = this.newX;
+				// let oldY = this.newY;
+
+				if ( newX > 0 && newY > 0 && unmoddedY <= this.yMax  && unmoddedY > this.yMin ) {
+					// prevents weird things, like changing perspective across poles;
+					// also creates a nextTick to operate on variables beoforehand
+					this.newX = newX;
+					this.newY = newY;
+				}
+
+				// console.log( this.newX, this.newY );
+			},
+
+			getImageUrl(y,x) {
+
+				return this.siteImageDirectory +
+						'/' +
+						this.imageDirectory +
+						'/' +
+						this.imagePrefix +
+						this.imageSeperator +
+						y +
+						this.imageSeperator +
+						this.twoDigit( x ) +
+						'.' +
+						this.imageExtension;
 
 			},
 
-			getImage() {
+			getImage(y,x) {
+
+				let name = String(y)+String(x);
+
+				let img = new Image();
+				img.src = this.getImageUrl( y,x );
+
+				img.onload = () => {
+					this.images[name] = img;
+					if ( Object.keys( this.images ).length == this.yMax * this.yMin ) {
+						this.loaded = true;
+					} else {
+						// still loading;
+					}
+				};
 
 			},
 
@@ -103,7 +161,7 @@
 			loadImages() {
 				for ( let y = 0; y < this.yMax; y++ ) {
 					for ( let x = 0; x < this.xMax; x++ ) {
-						console.log( y+1,x+1 );
+						this.getImage( y+1,x+1 );
 					}
 				}
 			},
@@ -114,25 +172,28 @@
 			},
 
 			mouseMove(event) {
-				this.getMove( event.offsetX, event.offsetY );
+			    this.coords = this.convertRange( event.offsetX, event.offsetY );
+				if( this.touch.isPressed ) {
+					this.getMove( this.coords.x, this.coords.y );
+				}
+			},
+
+			alternateMouseMove(event) {
+			    this.coords = this.convertRange( event.offsetX, event.offsetY );
+				this.newX = this.coords.x;
+				this.newY = this.coords.y;
 			},
 
 			mouseDown(event) {
 			    this.touch.isPressed = true;
-			    let coords = this.convertRange( event.offsetX, event.offsetY );
-			    this.originX = coords.x;
-			    this.originY = coords.y;
-
-			    this.$nextTick(()=>{
-					this.canvas.addEventListener('mousemove', this.mouseMove);
-			    })
+			    this.originX = this.coords.x;
+			    this.originY = this.coords.y;
 			},
 
 			mouseUp(event) {
 				this.curX = this.newX;
 				this.curY = this.newY;
 			    this.touch.isPressed = false;
-				this.canvas.removeEventListener('mousemove', this.mouseMove);
 			},
 
 			resize(event) {
@@ -144,8 +205,11 @@
 
 			addListeners() {
 				window.addEventListener( 'resize', this.resize );
+				this.canvas.addEventListener('mousemove', this.mouseMove );
 				this.canvas.addEventListener( 'mousedown', this.mouseDown );
 				this.canvas.addEventListener( 'mouseup', this.mouseUp );
+				// this.canvas.addEventListener( 'mousemove', this.alternateMouseMove );
+
 			},
 
 			// removeEventListeners() {
@@ -161,14 +225,25 @@
 
 				let x = this.newX ? this.newX : this.curX;
 				let y = this.newY ? this.newY : this.curY;
+				let name = String(y) + String(x);
+				let image = this.images[name];
 
 				// console.log( x,y );
 
-				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
-				this.ctx.beginPath();
-				this.ctx.fillStyle = 'green';
-				this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
-				this.ctx.fill();
+				// this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+				// this.ctx.beginPath();
+				// this.ctx.fillStyle = 'green';
+				// this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+				// this.ctx.fill();
+
+				if ( image ) {
+					let m = 1;
+					let width = 800 * m;
+					let height = 600 * m;
+					let left =  ( this.canvas.width - width ) / 2;
+					let top =  ( this.canvas.height - height ) / 2;
+					this.ctx.drawImage( image, left, top, width, height);
+				}
 
 				requestAnimationFrame( this.animate );
 
