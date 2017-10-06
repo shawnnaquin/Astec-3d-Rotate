@@ -1,10 +1,30 @@
 <template>
-	<canvas ref="canvas" :class="$style.canvas"></canvas>
+	<div>
+
+		<vue-slider
+			ref="slider"
+			v-model="zoomLevel"
+			:max="zoomLevelMax"
+			:min="zoomLevelMin"
+			:interval="zoomLevelInterval"
+			:transition="0.2"
+			:real-time="true"
+		>
+		</vue-slider>
+		<canvas ref="canvas" :class="$style.canvas"></canvas>
+
+	</div>
 </template>
 
 <script>
 
+	import vueSlider from 'vue-slider-component'
+
 	export default {
+
+		components: {
+			'vue-slider' : vueSlider
+		},
 
 		data() {
 			return {
@@ -29,6 +49,11 @@
 				imageSeperator: '_',
 				imageExtension: 'jpg',
 
+				zoomLevel: 1,
+				zoomLevelMax: 3,
+				zoomLevelMin: 1,
+				zoomLevelInterval: 0.01,
+
 				// xRotations: 4,
 
 				flipped: false,
@@ -51,9 +76,6 @@
 				return this.canvas.getContext('2d')
 			},
 
-		},
-
-		components: {
 		},
 		watch: {
 		},
@@ -230,16 +252,15 @@
 
 				// console.log( x,y );
 
-				// this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
 				// this.ctx.beginPath();
 				// this.ctx.fillStyle = 'green';
 				// this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
 				// this.ctx.fill();
 
 				if ( image ) {
-					let m = 1;
-					let width = 800 * m;
-					let height = 600 * m;
+					let width = 800 * this.zoomLevel;
+					let height = 600 * this.zoomLevel;
 					let left =  ( this.canvas.width - width ) / 2;
 					let top =  ( this.canvas.height - height ) / 2;
 					this.ctx.drawImage( image, left, top, width, height);
