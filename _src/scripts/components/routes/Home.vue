@@ -28,6 +28,7 @@
 
 		data() {
 			return {
+
 				touch: {},
 				xMin: 1,
 				xMax: 24,
@@ -43,6 +44,9 @@
 				newX: null,
 				newY: null,
 
+				oldX: null,
+				oldY: null,
+
 				imagePrefix: 'DoubleBarrel',
 				imageDirectory: 'barrel',
 				siteImageDirectory: '../assets/images',
@@ -54,16 +58,22 @@
 				zoomLevelMin: 1,
 				zoomLevelInterval: 0.01,
 
-				// xRotations: 4,
+				alpha: 1,   /// current alpha value
 
+				// xRotations: 4,
 				flipped: false,
 				loaded: false,
+
 				images: {
 
 				},
+
 				coords: {
 
-				}
+				},
+
+				// changeCount: 0,
+
 			}
 		},
 
@@ -77,8 +87,10 @@
 			},
 
 		},
+
 		watch: {
 		},
+
 		methods: {
 
 			// getters / converters
@@ -130,17 +142,33 @@
 
 				let newX = modX;
 				let newY = modY;
-				// let oldX = this.newX;
-				// let oldY = this.newY;
+				let oldX = this.newX;
+				let oldY = this.newY;
+
+				if( oldY != newY || oldX != newX && this.alpha === 1 ) {
+					// set the old one and tween it out
+					// console.log( 'hit', this.alpha );
+
+					this.oldX = oldX;
+					this.oldY = oldY;
+
+					TweenMax.fromTo( this, 0.25, {
+						alpha: 1,
+					},{
+						alpha: 0,
+						ease: Circ.easeOut,
+					});
+
+				}
 
 				if ( newX > 0 && newY > 0 && unmoddedY <= this.yMax  && unmoddedY > this.yMin ) {
 					// prevents weird things, like changing perspective across poles;
-					// also creates a nextTick to operate on variables beoforehand
+					// also creates a nextTick to operate on variables beforehand
 					this.newX = newX;
 					this.newY = newY;
+
 				}
 
-				// console.log( this.newX, this.newY );
 			},
 
 			getImageUrl(y,x) {
@@ -223,7 +251,7 @@
 			},
 
 			// listener controllers
-			//----------------------------------------------------=---------------------------------------------------//
+			//--------------------------------------------------------------------------------------------------------//
 
 			addListeners() {
 				window.addEventListener( 'resize', this.resize );
@@ -231,7 +259,6 @@
 				this.canvas.addEventListener( 'mousedown', this.mouseDown );
 				this.canvas.addEventListener( 'mouseup', this.mouseUp );
 				// this.canvas.addEventListener( 'mousemove', this.alternateMouseMove );
-
 			},
 
 			// removeEventListeners() {
@@ -241,7 +268,7 @@
 			// },
 
 			// loop
-			//----------------------------------------------------=---------------------------------------------------//
+			//--------------------------------------------------------------------------------------------------------//
 
 			animate() {
 
@@ -250,20 +277,31 @@
 				let name = String(y) + String(x);
 				let image = this.images[name];
 
-				// console.log( x,y );
+				let oldX = this.oldX ? this.oldX : this.curX;
+				let oldY = this.oldY ? this.oldY : this.curY;
+				let oldName = String(oldY) + String(oldX);
+				let oldImage = this.images[oldName];
+
+				let width = 800 * this.zoomLevel;
+				let height = 600 * this.zoomLevel;
+				let left =  ( this.canvas.width - width ) / 2;
+				let top =  ( this.canvas.height - height ) / 2;
 
 				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
-				// this.ctx.beginPath();
-				// this.ctx.fillStyle = 'green';
-				// this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
-				// this.ctx.fill();
 
-				if ( image ) {
-					let width = 800 * this.zoomLevel;
-					let height = 600 * this.zoomLevel;
-					let left =  ( this.canvas.width - width ) / 2;
-					let top =  ( this.canvas.height - height ) / 2;
-					this.ctx.drawImage( image, left, top, width, height);
+				this.ctx.globalAlpha = 1;
+
+				this.ctx.save();
+
+			   	if ( image ) {
+			   		this.ctx.drawImage( image, left, top, width, height);
+			   	}
+
+				this.ctx.restore();
+
+				if ( this.alpha !== 1 || this.alpha !== 0 && oldImage ) {
+					this.ctx.globalAlpha = this.alpha;
+			   		this.ctx.drawImage( oldImage, left, top, width, height);
 				}
 
 				requestAnimationFrame( this.animate );
