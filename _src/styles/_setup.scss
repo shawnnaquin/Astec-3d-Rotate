@@ -25,6 +25,7 @@ $cinnabar: #e7512b;
 $westar: #e2ddd5;
 $cape-cod: #374240;
 $outer-space: #2e3836;
+$cream: #fbfaf9;
 
 /* foundation
 ----------------------------------------------------------------------------------------------------------------------*/
@@ -32,7 +33,7 @@ $outer-space: #2e3836;
 $global-width: 1700px;
 $row-width: $global-width;
 
-$body-background: $white;
+$body-background: $cream;
 $body-font-color: $outer-space;
 $body-font-family: $font-source-sans;
 $breakpoint-classes: (small medium large xlarge xxlarge xxxlarge huge);

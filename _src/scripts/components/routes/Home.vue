@@ -19,6 +19,7 @@
 <script>
 
 	import vueSlider from 'vue-slider-component'
+	import ZingTouch from 'zingtouch';
 
 	export default {
 
@@ -288,6 +289,9 @@
 				let top =  ( this.canvas.height - height ) / 2;
 
 				this.ctx.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+
+				this.ctx.fillStyle = '#fbfaf9';
+				this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 				this.ctx.globalAlpha = 1;
 

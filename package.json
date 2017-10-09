@@ -41,7 +41,8 @@
     "vue-style-loader": "^3.0.1",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "zingtouch": "^1.0.5"
   },
   "dependencies": {
     "babel-core": "^6.25.0",
