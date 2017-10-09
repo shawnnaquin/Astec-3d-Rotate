@@ -92,6 +92,7 @@
 
     html,
     body {
+        position: fixed;
         height:100%;
         overflow:hidden;
     }

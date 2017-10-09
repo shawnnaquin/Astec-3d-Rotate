@@ -9,6 +9,8 @@
 			:interval="zoomLevelInterval"
 			:transition="0.2"
 			:real-time="true"
+			:width="'50%'"
+			:class="$style.slider"
 		>
 		</vue-slider>
 		<canvas ref="canvas" :class="$style.canvas"></canvas>
@@ -19,7 +21,6 @@
 <script>
 
 	import vueSlider from 'vue-slider-component'
-	import ZingTouch from 'zingtouch';
 
 	export default {
 
@@ -30,7 +31,13 @@
 		data() {
 			return {
 
-				touch: {},
+				mouse: {
+					isPressed: false
+				},
+				touch: {
+					isPressed: false
+				},
+
 				xMin: 1,
 				xMax: 24,
 				yMin: 1,
@@ -42,11 +49,11 @@
 				curX: 12, 	// starting pos
 				curY: 6, 	// starting pos
 
-				newX: null,
-				newY: null,
+				newX: 12,
+				newY: 6,
 
-				oldX: null,
-				oldY: null,
+				oldX: 12,
+				oldY: 6,
 
 				imagePrefix: 'DoubleBarrel',
 				imageDirectory: 'barrel',
@@ -90,6 +97,12 @@
 		},
 
 		watch: {
+			'loaded': function(event) {
+				if ( event ) {
+					this.addListeners();
+					requestAnimationFrame( this.animate );
+				}
+			}
 		},
 
 		methods: {
@@ -165,11 +178,11 @@
 				if ( newX > 0 && newY > 0 && unmoddedY <= this.yMax  && unmoddedY > this.yMin ) {
 					// prevents weird things, like changing perspective across poles;
 					// also creates a nextTick to operate on variables beforehand
+					console.log( newX, newY);
 					this.newX = newX;
 					this.newY = newY;
 
 				}
-
 			},
 
 			getImageUrl(y,x) {
@@ -223,25 +236,49 @@
 			},
 
 			mouseMove(event) {
-			    this.coords = this.convertRange( event.offsetX, event.offsetY );
-				if( this.touch.isPressed ) {
+			    this.coords = this.convertRange( event.clientX, event.clientY );
+				if ( this.mouse.isPressed ) {
+					// console.log('mouseMove!');
 					this.getMove( this.coords.x, this.coords.y );
 				}
 			},
 
-			alternateMouseMove(event) {
-			    this.coords = this.convertRange( event.offsetX, event.offsetY );
-				this.newX = this.coords.x;
-				this.newY = this.coords.y;
+			touchMove(event) {
+				let touch_event = event.touches[0]; //first touch
+				if ( this.touch.isPressed ) {
+				    this.coords = this.convertRange( touch_event.clientX, touch_event.clientY );
+					this.getMove( this.coords.x, this.coords.y );
+				}
 			},
 
+			// alternateMouseMove(event) {
+			//     this.coords = this.convertRange( event.offsetX, event.offsetY );
+			// 	this.newX = this.coords.x;
+			// 	this.newY = this.coords.y;
+			// },
+
 			mouseDown(event) {
-			    this.touch.isPressed = true;
 			    this.originX = this.coords.x;
 			    this.originY = this.coords.y;
+			    this.mouse.isPressed = true;
 			},
 
 			mouseUp(event) {
+				this.curX = this.newX;
+				this.curY = this.newY;
+			    this.mouse.isPressed = false;
+			},
+
+			touchStart(event) {
+				let touch_event = event.touches[0]; //first touch
+			    this.coords = this.convertRange( touch_event.clientX, touch_event.clientY );
+		        this.originX = this.coords.x;
+		        this.originY = this.coords.y;
+			    this.touch.isPressed = true;
+			},
+
+			touchEnd(event) {
+				console.log('touchEnd!');
 				this.curX = this.newX;
 				this.curY = this.newY;
 			    this.touch.isPressed = false;
@@ -255,11 +292,19 @@
 			//--------------------------------------------------------------------------------------------------------//
 
 			addListeners() {
+
 				window.addEventListener( 'resize', this.resize );
-				this.canvas.addEventListener('mousemove', this.mouseMove );
+
 				this.canvas.addEventListener( 'mousedown', this.mouseDown );
 				this.canvas.addEventListener( 'mouseup', this.mouseUp );
-				// this.canvas.addEventListener( 'mousemove', this.alternateMouseMove );
+
+				this.canvas.addEventListener( 'touchstart', this.touchStart );
+				this.canvas.addEventListener( 'touchend', this.touchEnd );
+
+				this.canvas.addEventListener( 'mousemove', this.mouseMove );
+				this.canvas.addEventListener( 'touchmove', this.touchMove );
+
+				this.canvas.addEventListener( 'mousemove', this.alternateMouseMove );
 			},
 
 			// removeEventListeners() {
@@ -316,8 +361,6 @@
 		mounted() {
 			this.loadImages();
 			this.setCanvasSize();
-			this.addListeners();
-			requestAnimationFrame( this.animate );
 		}
 
 
@@ -327,6 +370,15 @@
 
 
 <style lang="scss" module>
+
+	.slider {
+		position:relative;
+		top:36px;
+		left:25%;
+		width:50%;
+		z-index:1;
+	}
+
 	canvas {
 		position:relative;
 		top:0;

@@ -188,7 +188,7 @@ module.exports = (env = {}) => {
                 'ScrollMagic': resolve(__dirname, pkg.path.npm+'scrollmagic/scrollmagic/uncompressed/ScrollMagic.js'),
                 'animation.gsap': resolve(__dirname, pkg.path.npm+'scrollmagic/scrollmagic/uncompressed/plugins/animation.gsap.js'),
                 'addIndicators': resolve(__dirname, pkg.path.npm+'scrollmagic/scrollmagic/uncompressed/plugins/debug.addIndicators.js'),
-                'zingtouch': resolve(__dirname, pkg.path.npm+'zingtouch/dist/zingtouch.js')
+                'zingtouch': resolve(__dirname, pkg.path.npm+'zingtouch/src/ZingTouch.js')
             }
         },
 
