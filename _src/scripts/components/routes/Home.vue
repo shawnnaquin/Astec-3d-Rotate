@@ -145,14 +145,14 @@
 				let oldX = this.newX;
 				let oldY = this.newY;
 
-				if( oldY != newY || oldX != newX && this.alpha === 1 ) {
+				if( oldY != newY || oldX != newX ) {
 					// set the old one and tween it out
 					// console.log( 'hit', this.alpha );
 
 					this.oldX = oldX;
 					this.oldY = oldY;
 
-					TweenMax.fromTo( this, 0.25, {
+					TweenMax.fromTo( this, 0.15, {
 						alpha: 1,
 					},{
 						alpha: 0,
