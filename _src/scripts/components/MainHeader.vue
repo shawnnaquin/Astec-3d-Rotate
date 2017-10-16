@@ -7,7 +7,7 @@
 </template>
 
 <script>
-	import logo from 'components/svgs/logo-alt';
+	import logo from 'components/svgs/astec-logo';
 	import TweenMax from 'TweenMax';
 
 
@@ -77,7 +77,7 @@
 	}
 	.home:hover {
 		.logo {
-			fill:$cinnabar;
+			fill:$supernova;
 			transition-timing-function: ease-out;
 		}
 	}

@@ -62,8 +62,8 @@
 		font-weight:600;
 		line-height: 1.5;
 		text-align: center;
-		color: rgba($westar, 0.5);
-		background:$outer-space;
+		color: rgba($gallery, 0.5);
+		background: $mineshaft;
 	}
 
 	.divider {
@@ -83,7 +83,7 @@
 		margin:0 8px 8px 8px;
 		&:hover {
 			.icon {
-				fill:rgba($westar, 0.5);
+				fill:rgba( $gallery, 0.5);
 			}
 		}
 	}
@@ -92,7 +92,7 @@
 		float:left;
 		width:30px;
 		height:30px;
-		fill:rgba($westar,0.2);
+		fill:rgba( $gallery,0.2);
 		transition:fill 200ms ease-in;
 	}
 
@@ -107,7 +107,7 @@
 
 	.contact {
 		text-align:center;
-		color:rgba($westar,0.2);
+		color:rgba( $gallery,0.2);
 	}
 
 </style>

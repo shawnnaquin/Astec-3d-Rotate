@@ -19,7 +19,7 @@
 
 <style lang="scss" module>
 	.container{
-		background-color: $outer-space;
+		background-color: $mineshaft;
 		position: relative;
 		height: 100vh;
 

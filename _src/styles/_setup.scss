@@ -19,13 +19,10 @@ $font-amnesty: 'Amnesty Trade Gothic Cn';
 
 $white: #fff;
 $black: #000;
-$confetti: #e8d558;
-$rolling-stone: #7b7c7e;
-$cinnabar: #e7512b;
-$westar: #e2ddd5;
-$cape-cod: #374240;
-$outer-space: #2e3836;
-$cream: #fbfaf9;
+$supernova: #fdcd0a;
+$mineshaft: #353232;
+$silversand: #babbbd;
+$gallery: #ebebeb;
 
 /* foundation
 ----------------------------------------------------------------------------------------------------------------------*/
@@ -34,7 +31,7 @@ $global-width: 1700px;
 $row-width: $global-width;
 
 $body-background: $white;
-$body-font-color: $outer-space;
+$body-font-color: $mineshaft;
 $body-font-family: $font-source-sans;
 $breakpoint-classes: (small medium large xlarge xxlarge xxxlarge huge);
 $breakpoints: ( small: 0, medium: 768px, large: 1024px, xlarge: 1200px, xxlarge: 1440px, xxxlarge: 1600px, huge: 1920px );

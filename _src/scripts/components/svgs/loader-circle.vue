@@ -53,19 +53,19 @@
 
 
 	.circle-1{
-		stroke: $westar;
+		stroke: $silversand;
 		transform: rotate(45deg);
 	}
 
 
 	.circle-2{
-		stroke: $cinnabar;
+		stroke: $supernova;
 		transform: rotate(225deg);
 	}
 
 
 	.circle-3{
-		stroke: $cape-cod;
+		stroke: rgba( $silversand, 0.5 );
 		transform: rotate(135deg);
 	}
 

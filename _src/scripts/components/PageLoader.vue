@@ -12,13 +12,10 @@
 	</div>
 </template>
 
-
-
-
 <script>
 	import TweenMax from 'TweenMax'
 	import LoaderCircle from 'components/svgs/loader-circle'
-	import logo from 'components/svgs/logo'
+	import logo from 'components/svgs/a-logo'
 
 	export default {
 
@@ -63,9 +60,6 @@
 	}
 </script>
 
-
-
-
 <style lang="scss" module>
 	.wrapper{
 		top: 0;
@@ -77,7 +71,7 @@
 
 		transition: all ease-in 0.3s;
 
-		background-color: $outer-space;
+		background-color: $mineshaft;
 	}
 
 
@@ -100,7 +94,7 @@
 	.logo{
 		top: 50%;
 		left: 50%;
-		width: spacing();
+		width: spacing(2);
 		position: absolute;
 		z-index: z('normal');
 

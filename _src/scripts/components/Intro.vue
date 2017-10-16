@@ -27,7 +27,7 @@
     .container {
         position: relative;
         height: 100vh;
-        background:$outer-space;
+        background:$mineshaft;
     }
     .title {
         text-align: center;

@@ -1,6 +1,11 @@
 <template>
 	<div ref="container">
 
+		<div :class="$style.logoContainer">
+			<astec-logo :class="$style.logo"></astec-logo>
+			<dilman-logo :class="$style.logo"></dilman-logo>
+		</div>
+
 		<vue-slider
 			ref="slider"
 			v-model="zoomLevel"
@@ -11,8 +16,20 @@
 			:real-time="true"
 			:width="'50%'"
 			:class="$style.slider"
+			:tooltip-style=" {
+				backgroundColor: '#fdcd0a',
+				borderColor: '#fdcd0a',
+				color: 'black'
+			}"
+			:process-style=" {
+				backgroundColor: 'rgb(253,205,10)'
+			}"
+			:sliderStyle=" {
+				backgroundColor: 'black'
+			}"
 		>
 		</vue-slider>
+
 		<canvas ref="canvas" :class="$style.canvas"></canvas>
 
 	</div>
@@ -22,11 +39,15 @@
 
 	import vueSlider from 'vue-slider-component';
 	import ZingTouch from 'zingtouch';
+	import astecLogo from 'components/svgs/astec-logo';
+	import dilmanLogo from 'components/svgs/dilman-logo';
 
 	export default {
 
 		components: {
-			'vue-slider' : vueSlider
+			'vue-slider' : vueSlider,
+			'dilman-logo' : dilmanLogo,
+			'astec-logo' : astecLogo
 		},
 
 		data() {
@@ -605,6 +626,7 @@
 		mounted() {
 			this.loadImages();
 			this.setCanvasSize();
+			console.log( this.$style.yellow );
 		}
 
 
@@ -615,12 +637,44 @@
 
 <style lang="scss" module>
 
+	$logo-ratio: 0.6654166667;
+
+	.logo-container {
+		position: absolute;
+
+		top: auto;
+		left: 0;
+		bottom: 0;
+
+		text-align: left;
+		z-index: 2;
+		pointer-events:none;
+		text-align:center;
+		width:auto;
+		text-align:left;
+		padding:12px;
+		@include breakpoint(medium) {
+			top: 0;
+			bottom: auto;
+		}
+	}
+
+	.logo {
+		display:inline-block;
+		fill:$mineshaft;
+		width: 64px;
+		margin-right: 12px;
+		height: calc( 64px * #{$logo-ratio} );
+		margin-right: 4px;
+	}
+
 	.slider {
-		position:relative;
+		position:absolute;
 		top:36px;
 		left:25%;
 		width:50%;
 		z-index:1;
+		top: 40px;
 	}
 
 	canvas {
@@ -631,4 +685,5 @@
 		height:100%;
 		transform: translate3d(0,0,0);
 	}
+
 </style>
