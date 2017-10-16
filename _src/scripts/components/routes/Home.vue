@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div ref="container">
 
 		<vue-slider
 			ref="slider"
@@ -20,7 +20,8 @@
 
 <script>
 
-	import vueSlider from 'vue-slider-component'
+	import vueSlider from 'vue-slider-component';
+	import ZingTouch from 'zingtouch';
 
 	export default {
 
@@ -30,6 +31,8 @@
 
 		data() {
 			return {
+
+				swipe: false,
 
 				mouse: {
 					isPressed: false
@@ -62,19 +65,27 @@
 				imageExtension: 'jpg',
 
 				zoomLevel: 1,
-				zoomLevelMax: 2,
+				zoomLevelMax: 3,
 				zoomLevelMin: 1,
 				zoomLevelInterval: 0.01,
+				pinchZoomLevelInterval: 0.08,
 
-				imageWidth: 1600,
-				imageHeight: 1200,
+				imageWidth: 2400,
+				imageHeight: 1800,
+
+				velocityThreshold: 0.2,
+				// spinFramesAmount: 30,
+				velocityMultiplier: 15,
 
 				alpha: 1,
-				alphaFrames: false,
+				alphaFrames: true,
 
 				imageCount: 0,
 
 				loaded: false,
+				lastDirection: null,
+				zt: null,
+				spinFrameCount: 0,
 
 				images: {
 
@@ -107,6 +118,7 @@
 				if ( event ) {
 					this.addListeners();
 					requestAnimationFrame( this.animate );
+					this.$store.commit('loaded');
 				}
 			}
 		},
@@ -115,6 +127,14 @@
 
 			// getters / converters
 			//--------------------------------------------------------------------------------------------------------//
+			// robert penners easing functions
+			// easeOutSine(t, b, c, d) {
+			// 	return c * Math.sin(t/d * (Math.PI/2)) + b;
+			// },
+
+			easeOutCirc( t, b, c, d) {
+					return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+				},
 
 			twoDigit( num ) {
 				return ( '0' + num ).slice(-2);
@@ -146,6 +166,7 @@
 				const yMinThresh = this.yMin + 1;
 				const yMaxThresh = this.yMax - 1;
 
+				let lastDirection;
 				let howFarX  = x - this.originX;
 				let unmoddedX = this.curX - howFarX;
 				let modX = unmoddedX % this.xMax === 0 ? this.xMax : unmoddedX % this.xMax;
@@ -166,8 +187,12 @@
 					this.oldX = oldX;
 					this.oldY = oldY;
 
+					if ( newX > 0 && unmoddedY <= yMaxThresh && unmoddedY > yMinThresh ) {
+						this.lastDirection = oldX - newX > 0 ? -1 : 1;
+					}
+
 					if ( this.alphaFrames ) {
-						TweenMax.fromTo( this, 0.1, {
+						TweenMax.fromTo( this, 0.05, {
 							alpha: 1,
 						},{
 							alpha: 0,
@@ -202,7 +227,21 @@
 					};
 				};
 
-				// use report(), watch out for mem leak!
+				let atExtremesX = (value) => {
+					// move right or left a 'value', called by conditional to move x if y is too far gone;
+					// let altX = ( this.newX + value ) % this.xMax;
+					// if ( altX > 0 ) {
+					// 	this.newX = altX % this.xMax !== 0 ? altX % this.xMax : this.xMax + value;
+					// }
+					TweenMax.to( this, 0.3, {
+						newY: ( this.yMax + 1 ) / 2,
+						roundProps: ['newY'],
+						ease:Power2.easeOut,
+						onComplete: this.resetOrigin,
+					});
+
+					// this.resetOrigin();
+				};
 
 				if ( newX > 0 && unmoddedY <= yMaxThresh && unmoddedY > yMinThresh ) {
 
@@ -210,42 +249,22 @@
 					// also creates a nextTick to operate on variables beforehand
 					this.newX = newX;
 					this.newY = newY;
-
+					// console.log( report() );
 					return;
 
 				} else if ( unmoddedY <= yMinThresh ) {
 
 					// trying to go across north pole!
 					// heading north
-
-					let changeX = (value) => {
-
-						let altX = ( this.newX + value ) % this.xMax;
-						this.newX = altX % this.xMax !== 0 ? altX % this.xMax : this.xMax;
-
-						// reset the origins since the program doesn't know we're out of bounds;
-						this.$nextTick(()=> {
-							if ( this.mouse.isPressed ) {
-								this.mouseUp();
-								this.$nextTick(()=>{
-									this.mouseDown();
-								});
-							} else if ( this.touch.isPressed ) {
-								this.mouseUp();
-								this.$nextTick(()=>{
-									this.mouseDown();
-								});
-							}
-						});
-
-					};
-
 					if( howFarX > 0 ) {
 						// heading north-east;
-						changeX( -1 );
-					} else if ( howFarX <= 0 ) {
+						atExtremesX( -1 );
+					} else if ( howFarX < 0 ) {
 						// heading north-west;
-						changeX( 1 );
+						atExtremesX( 1 );
+					} else {
+						// can't assume the direction here, we need to know which way the user was travelling previously!
+						// atExtremesX( this.lastDirection );
 					}
 
 					return;
@@ -254,11 +273,16 @@
 
 					// trying to go across south pole
 					// heading south
-
+					// don't worry about === 0, it doesn't make visual sense to move at that coord;
 					if( howFarX > 0 ) {
 						// heading south-east
-					} else if ( howFarX <= 0 ) {
+						atExtremesX( -1 );
+					} else if ( howFarX < 0 ) {
 						// heading south-west
+						atExtremesX( 1 );
+					} else {
+						// can't assume the direction here, we need to know which way the user was travelling previously!
+						// atExtremesX( this.lastDirection );
 					}
 
 					return;
@@ -272,6 +296,7 @@
 				} else {
 
 					// whoops! mem leak
+					// newY maybe negative?
 					console.warn('mem leak!', report() );
 
 				}
@@ -339,15 +364,16 @@
 
 			mouseMove(event) {
 			    this.coords = this.convertRange( event.clientX, event.clientY );
-				if ( this.mouse.isPressed ) {
-					// console.log('mouseMove!');
+				if ( this.mouse.isPressed && !this.swipe ) {
+					console.log('mouseMove!');
 					this.getMove( this.coords.x, this.coords.y );
 				}
 			},
 
 			touchMove(event) {
 				let touch_event = event.touches[0]; //first touch
-				if ( this.touch.isPressed ) {
+				if ( this.touch.isPressed && !this.swipe ) {
+					console.log('touchMove!');
 				    this.coords = this.convertRange( touch_event.clientX, touch_event.clientY );
 					this.getMove( this.coords.x, this.coords.y );
 				}
@@ -380,6 +406,105 @@
 			    this.touch.isPressed = false;
 			},
 
+			zingPinch(event) {
+				if ( this.zoomLevel > this.zoomLevelMin ) {
+					let t = (this.zoomLevel - this.pinchZoomLevelInterval );
+					this.zoomLevel = Number( t.toFixed(2) );
+				}
+			},
+
+			zingExpand(event) {
+				if ( this.zoomLevel < this.zoomLevelMax ) {
+					let t = (this.zoomLevel + this.pinchZoomLevelInterval );
+					this.zoomLevel = Number( t.toFixed(2) );
+				}
+			},
+
+			zingSwipe(event) {
+
+				let eData = event.detail.data[0];
+				let v = eData.velocity;
+				let d = eData.currentDirection;
+
+				if ( v > this.velocityThreshold ) {
+
+					this.swipe = true;
+
+					let q = Math.round( v * this.velocityMultiplier );
+
+					if ( d > 90 && d < 270 ) {
+						this.hardSpin( q, q*2 );
+					} else {
+						this.hardSpin( -q, q*2 );
+					}
+
+				}
+			},
+
+			hardSpinDone() {
+
+			},
+
+			hardSpin( movedist, framesAmount ) {
+
+				let req;
+
+				let done = ()=> {
+
+					console.log('done');
+					this.swipe = false;
+					this.resetOrigin();
+					this.spinFrameCount = 0;
+					console.log('added, end');
+					return;
+				};
+
+				let t = ()=> {
+					cancelAnimationFrame( req );
+					done();
+				};
+
+				this.canvas.addEventListener('mousedown', t );
+				this.canvas.addEventListener('touchstart', t );
+				this.canvas.addEventListener('touchmove', t );
+
+				let loopIt = ()=> {
+
+					if ( this.spinFrameCount < 100 ) {
+						console.log('looping');
+						let q = Math.round( this.easeOutCirc(this.spinFrameCount, this.curX, movedist, 100 ) );
+						let v = q % this.xMax === 0 ? this.xMax : q % this.xMax;
+
+						if ( v > 0 ) {
+							this.newX = v;
+						} else {
+							this.newX = this.xMax + v;
+						}
+
+						this.spinFrameCount = this.spinFrameCount + 1;
+
+						req = requestAnimationFrame( loopIt );
+
+					} else {
+						done();
+					}
+				};
+
+				loopIt();
+
+			},
+
+			resetOrigin() {
+				this.$nextTick( ()=> {
+					this.curX = this.newX;
+					this.curY = this.newY;
+					this.$nextTick(()=>{
+						this.originX = this.coords.x;
+						this.originY = this.coords.y;
+					});
+				});
+			},
+
 			resize(event) {
 				this.setCanvasSize();
 			},
@@ -388,7 +513,12 @@
 			//--------------------------------------------------------------------------------------------------------//
 
 			addListeners() {
-				console.log('listeners added');
+
+				this.zt = new ZingTouch.Region( this.$refs.container );
+				this.zt.bind( this.$refs.canvas, 'swipe', this.zingSwipe );
+				this.zt.bind( this.$refs.canvas, 'pinch', this.zingPinch );
+				this.zt.bind( this.$refs.canvas, 'expand', this.zingExpand );
+
 				window.addEventListener( 'resize', this.resize );
 
 				this.canvas.addEventListener( 'mousedown', this.mouseDown );
@@ -399,6 +529,27 @@
 
 				this.canvas.addEventListener( 'mousemove', this.mouseMove );
 				this.canvas.addEventListener( 'touchmove', this.touchMove );
+
+
+			},
+
+			removeListeners() {
+				// console.log('listeners added');
+
+				this.zt.unbind( this.$refs.canvas, 'swipe' );
+				this.zt.unbind( this.$refs.canvas, 'pinch' );
+				this.zt.unbind( this.$refs.canvas, 'expand' );
+
+				window.removeEventListener( 'resize', this.resize );
+
+				this.canvas.removeEventListener( 'mousedown', this.mouseDown );
+				this.canvas.removeEventListener( 'mouseup', this.mouseUp );
+
+				this.canvas.removeEventListener( 'touchstart', this.touchStart );
+				this.canvas.removeEventListener( 'touchend', this.touchEnd );
+
+				this.canvas.removeEventListener( 'mousemove', this.mouseMove );
+				this.canvas.removeEventListener( 'touchmove', this.touchMove );
 
 			},
 
