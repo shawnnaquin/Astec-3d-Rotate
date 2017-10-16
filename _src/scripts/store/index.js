@@ -9,8 +9,7 @@ import settings from './modules/settings';
 Vue.use(Vuex);
 
 const state = {
-    loaded: false,
-    showLoader: true,
+    loaded: false
 };
 
 export default new Vuex.Store({

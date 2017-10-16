@@ -1,1 +1,5 @@
-export default {}
+export default {
+	loaded(state) {
+		state.loaded = !state.loaded;
+	}
+}

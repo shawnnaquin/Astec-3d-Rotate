@@ -1,19 +1,17 @@
 <template>
     <div :class="$style.wrapper">
 
-        <div v-if="loaded" :class="$style.loaded">
+        <div :class="$style.loaded">
             <!-- <main-header></main-header> -->
             <!-- <intro></intro> -->
-
             <router-view></router-view>
-
             <!-- <main-footer></main-footer> -->
         </div>
-<!--
+
         <transition name="fade">
-            <page-loader v-if="animateLoader"></page-loader>
+            <page-loader v-if=" !$store.state.loaded "></page-loader>
         </transition>
- -->
+
     </div>
 </template>
 
@@ -35,8 +33,8 @@
 
         data() {
             return {
-                loaded: false,
-                animateLoader: true
+                // loaded: false,
+                // animateLoader: true
             }
         },
 
@@ -60,13 +58,13 @@
         },
 
         watch: {
-            "$store.state.settings.list": function() {
-                this.loaded = true;
+            // "$store.state.settings.list": function() {
+            //     this.loaded = true;
 
-                setTimeout(() => {
-                    this.animateLoader = false;
-                }, 1500);
-            }
+            //     setTimeout(() => {
+            //         this.animateLoader = false;
+            //     }, 1500);
+            // }
         },
 
         created() {

@@ -1,1 +1,5 @@
-export default {}
+export default {
+	loaded(context) {
+		context.commit('loaded');
+	}
+}
